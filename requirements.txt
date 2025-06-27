@@ -1,3 +1,2 @@
-flask
 functions-framework==3.*
 requests==2.*
