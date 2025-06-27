@@ -2,10 +2,8 @@ import os
 import requests
 import functions_framework
 from datetime import datetime, timezone
-# ---------------------------------------------------------------------------
-# ❶  Helper – get a StopPoint ID from a (possibly fuzzy) stop name
-# ---------------------------------------------------------------------------
-TFL_APP_ID  = os.getenv("TFL_APP_ID")   # set in Cloud Function › Runtime variables
+
+TFL_APP_ID  = os.getenv("TFL_APP_ID")   
 TFL_APP_KEY = os.getenv("TFL_APP_KEY")
 SEARCH_URL  = "https://api.tfl.gov.uk/StopPoint/Search/{}"
 ARRIVAL_URL = "https://api.tfl.gov.uk/StopPoint/{}/Arrivals"
@@ -47,23 +45,8 @@ def build_arrival_message(stop_id: str, route: str | None = None) -> str:
 # ---------------------------------------------------------------------------
 @functions_framework.http
 def london_transit_handler(request):
-   """
-   Expected Dialogflow CX JSON:
-   {
-     "fulfillmentInfo": { "tag": "GetTransitSchedule" },
-     "sessionInfo": {
-         "parameters": {
-             "stop_name": "London Bridge",
-             "bus_route": "141"   # optional
-         }
-     }
-   }
-   """
    req_json = request.get_json(silent=True) or {}
-   tag      = req_json.get("fulfillmentInfo", {}).get("tag", "")
    params   = req_json.get("sessionInfo", {}).get("parameters", {})
-   if tag != "GetTransitSchedule":
-       return _df_response("Sorry — unsupported webhook tag.")
    stop_name = params.get("stop_name")
    if not stop_name:
        return _df_response("Which stop are you interested in?")
