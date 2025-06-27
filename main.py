@@ -54,3 +54,5 @@ def webhook_handler():
            "messages": [{"text": {"text": [text]}}]
        }
    })
+if __name__ == "__main__":
+   app.run(debug=True)
